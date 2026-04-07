@@ -20,3 +20,30 @@ export async function getGames(limit?: number): Promise<Game[]> {
 
   return data as Game[];
 }
+
+export async function getUpcomingGames(limit = 12): Promise<Game[]> {
+  const today = new Date();
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  const next15Days = new Date(today);
+  next15Days.setDate(today.getDate() + 15);
+  next15Days.setHours(23, 59, 59, 999);
+
+  const { data, error } = await supabase
+    .from("games")
+    .select("*")
+    .gte("release_date", tomorrow.toISOString())
+    .lte("release_date", next15Days.toISOString())
+    .order("release_date", { ascending: true })
+    .limit(limit);
+
+  if (error) {
+    console.error("Erro ao buscar próximos lançamentos:", error.message);
+    throw new Error("Não foi possível buscar os próximos lançamentos.");
+  }
+
+  return data as Game[];
+}

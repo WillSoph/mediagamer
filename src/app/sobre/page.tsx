@@ -9,7 +9,7 @@ export default function SobrePage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="inline-flex items-center gap-3">
             <Image
-                src="/logo/loguinho-mediagamer.png"
+                src="/logo/loguinho-mediagamer-2.png"
                 alt="MediaGamer"
                 width={10}
                 height={10}

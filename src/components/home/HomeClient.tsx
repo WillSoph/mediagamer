@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import LatestGamesCarousel from "@/components/home/LatestGamesCarousel";
+import UpcomingReleasesCarousel from "./UpcomingReleasesCarousel";
 import Image from "next/image";
 
-type Game = {
+export type Game = {
   id: string;
   title: string;
   slug: string;
@@ -56,67 +57,62 @@ function formatDate(date: string | null) {
   }).format(new Date(date));
 }
 
-export default function HomeClient({ games }: { games: Game[] }) {
+type HomeClientProps = {
+  latestGames: Game[];
+  upcomingGames: Game[];
+};
+
+export default function HomeClient({
+  latestGames,
+  upcomingGames,
+}: HomeClientProps) {
   const [search, setSearch] = useState("");
 
   const trimmedSearch = search.trim().toLowerCase();
 
+  const searchableGames = useMemo(() => {
+    const map = new Map<string, Game>();
+
+    [...latestGames, ...upcomingGames].forEach((game) => {
+      map.set(game.id, game);
+    });
+
+    return Array.from(map.values());
+  }, [latestGames, upcomingGames]);
+
   const filteredGames = useMemo(() => {
     if (!trimmedSearch) return [];
 
-    return games.filter((game) => {
+    return searchableGames.filter((game) => {
       const title = game.title.toLowerCase();
       const slug = game.slug.toLowerCase();
 
       return title.includes(trimmedSearch) || slug.includes(trimmedSearch);
     });
-  }, [games, trimmedSearch]);
+  }, [searchableGames, trimmedSearch]);
 
   const showSearchResults = trimmedSearch.length > 0;
 
   return (
     <>
-      {/* <section className="w-full border-b border-border bg-surface">
-        <div className="mx-auto flex min-h-[120px] max-w-7xl items-center justify-center px-4 py-4 sm:min-h-[140px] sm:px-6 lg:px-8">
-          <div className="flex h-[90px] w-full items-center justify-center rounded-3xl border border-border bg-card text-center text-sm text-text-secondary sm:h-[110px]">
-            Banner de propaganda full-width
-          </div>
-        </div>
-      </section> */}
-
       <header className="sticky top-0 z-20 border-b border-border/80 bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" className="inline-flex items-center gap-3">
               <div className="flex items-center">
                 <Image
-                    src="/logo/media-gamer-logo-site.png"
-                    alt="MediaGamer"
-                    width={151}
-                    height={46}
-                    className="h-full w-full object-contain"
-                    priority
+                  src="/logo/media-gamer-logo-site-2.png"
+                  alt="MediaGamer"
+                  width={151}
+                  height={46}
+                  className="h-full w-full object-contain"
+                  priority
                 />
-                </div>
-
-              {/* <div>
-                <p className="font-display text-2xl font-bold tracking-tight text-text">
-                  MediaGamer
-                </p>
-              </div> */}
+              </div>
             </Link>
           </div>
 
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <nav className="flex items-center gap-2">
-              <button
-                type="button"
-                className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-bg transition hover:bg-primary-hover"
-              >
-                Games
-              </button>
-            </nav>
-
             <div className="flex items-center gap-3">
               <div className="flex w-full min-w-0 items-center gap-3 rounded-full border border-border bg-card px-4 py-3 lg:w-[360px]">
                 <span className="text-text-muted">🔍</span>
@@ -229,7 +225,13 @@ export default function HomeClient({ games }: { games: Game[] }) {
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="rounded-3xl border border-border/80 bg-card/70 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)] backdrop-blur sm:p-6">
-          <LatestGamesCarousel games={games} />
+          <LatestGamesCarousel games={latestGames} />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+        <div className="rounded-3xl border border-border/80 bg-card/70 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)] backdrop-blur sm:p-6">
+          <UpcomingReleasesCarousel games={upcomingGames} />
         </div>
       </section>
     </>

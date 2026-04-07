@@ -2,6 +2,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import GameDetailsClient from "@/components/game/GameDetailsClient";
 import Image from "next/image";
+import type { Metadata } from "next";
 
 type ReviewItem = {
   id: string;
@@ -139,6 +140,7 @@ async function getGamePageData(slug: string) {
   return {
     game: {
       title: game.title,
+      slug: game.slug,
       release_date: game.release_date,
       review_count: game.review_count,
       score_weighted: game.score_weighted,
@@ -149,6 +151,88 @@ async function getGamePageData(slug: string) {
     reviews: (reviews ?? []) as ReviewItem[],
     allPlatforms: (allPlatforms ?? []) as Platform[],
     linkedPlatformSlugs: linkedPlatformSlugs as string[],
+  };
+}
+
+export async function generateMetadata({
+  params,
+}: GamePageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getGamePageData(slug);
+
+  const siteUrl = "https://mediagamer.com.br";
+
+  if (!data) {
+    return {
+      title: "Jogo não encontrado | MediaGamer",
+      description:
+        "A página deste jogo não foi encontrada no MediaGamer, sua plataforma de reviews e scores confiáveis.",
+      alternates: {
+        canonical: `${siteUrl}/jogos/${slug}`,
+      },
+      openGraph: {
+        title: "Jogo não encontrado | MediaGamer",
+        description:
+          "A página deste jogo não foi encontrada no MediaGamer, sua plataforma de reviews e scores confiáveis.",
+        url: `${siteUrl}/jogos/${slug}`,
+        siteName: "MediaGamer",
+        locale: "pt_BR",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Jogo não encontrado | MediaGamer",
+        description:
+          "A página deste jogo não foi encontrada no MediaGamer, sua plataforma de reviews e scores confiáveis.",
+      },
+      robots: {
+        index: false,
+        follow: true,
+      },
+    };
+  }
+
+  const scoreText =
+    typeof data.game.score_weighted === "number"
+      ? ` Veja a nota agregada atual: ${data.game.score_weighted}.`
+      : "";
+
+  const description = `Veja reviews, notas e análises de ${data.game.title} no MediaGamer.${scoreText} Descubra se vale a pena jogar e acompanhe a opinião da mídia gamer brasileira.`;
+
+  return {
+    title: `${data.game.title} | MediaGamer`,
+    description,
+    alternates: {
+      canonical: `${siteUrl}/jogos/${data.game.slug}`,
+    },
+    openGraph: {
+      title: `${data.game.title} | MediaGamer`,
+      description,
+      url: `${siteUrl}/jogos/${data.game.slug}`,
+      siteName: "MediaGamer",
+      locale: "pt_BR",
+      type: "article",
+      images: data.game.coverUrl
+        ? [
+            {
+              url: data.game.coverUrl,
+              width: 1200,
+              height: 630,
+              alt: data.game.title,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${data.game.title} | MediaGamer`,
+      description,
+      images: data.game.coverUrl ? [data.game.coverUrl] : [],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
 
@@ -185,12 +269,12 @@ export default async function GamePage({ params }: GamePageProps) {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="inline-flex items-center gap-3">
             <Image
-                src="/logo/loguinho-mediagamer.png"
-                alt="MediaGamer"
-                width={10}
-                height={10}
-                className="h-10 w-10 object-contain"
-                priority
+              src="/logo/loguinho-mediagamer-2.png"
+              alt="MediaGamer"
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+              priority
             />
 
             <div>

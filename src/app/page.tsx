@@ -1,12 +1,18 @@
-import { getGames } from "@/services/games";
+import { getGames, getUpcomingGames } from "@/services/games";
 import HomeClient from "@/components/home/HomeClient";
 
 export default async function Home() {
-  const games = await getGames(50);
+  const [latestGames, upcomingGames] = await Promise.all([
+    getGames(50),
+    getUpcomingGames(12),
+  ]);
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
-      <HomeClient games={games} />
+      <HomeClient
+        latestGames={latestGames}
+        upcomingGames={upcomingGames}
+      />
     </main>
   );
 }
