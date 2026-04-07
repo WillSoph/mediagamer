@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Sora } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/layout/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+
+
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sora = Sora({
   subsets: ["latin"],
+  variable: "--font-display",
 });
 
 export const metadata: Metadata = {
@@ -23,11 +26,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="pt-BR">
+      <body className={`${inter.variable} ${sora.variable} bg-bg text-text antialiased`}>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
