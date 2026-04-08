@@ -1,3 +1,5 @@
+export const revalidate = 3600;
+
 import { getGames, getUpcomingGames } from "@/services/games";
 import HomeClient from "@/components/home/HomeClient";
 

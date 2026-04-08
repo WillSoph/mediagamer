@@ -50,7 +50,7 @@ function formatReleaseDate(date: string | null) {
   }).format(new Date(date));
 }
 
-export default function LatestGamesCarousel({ games }: { games: Game[] }) {
+export default function UpcomingReleasesCarousel({ games }: { games: Game[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
