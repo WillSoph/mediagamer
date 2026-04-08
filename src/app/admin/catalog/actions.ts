@@ -257,3 +257,16 @@ export async function updateReviewSource(formData: FormData) {
 
   revalidatePath("/admin/catalog");
 }
+
+export async function deleteGame(formData: FormData) {
+  const id = formData.get("game_id");
+
+  const { error } = await supabase
+    .from("games")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    throw new Error("Erro ao deletar jogo");
+  }
+}

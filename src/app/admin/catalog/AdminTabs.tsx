@@ -8,6 +8,7 @@ import {
   createPublisher,
   updateGame,
   updateReviewSource,
+  deleteGame,
 } from "./actions";
 import ImportGames from "@/components/admin/ImportGames";
 
@@ -548,15 +549,45 @@ export default function AdminTabs({
                         </div>
                       </dl>
 
-                      <button
-                        type="button"
-                        onClick={() => handleEditGame(game)}
-                        className="absolute bottom-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-300 transition hover:border-emerald-500 hover:text-emerald-300"
-                        title="Editar jogo"
-                        aria-label={`Editar ${game.title}`}
-                      >
-                        ✎
-                      </button>
+                      <div className="absolute bottom-4 right-4 flex gap-2">
+                        {/* Editar */}
+                        <button
+                          type="button"
+                          onClick={() => handleEditGame(game)}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-300 transition hover:border-emerald-500 hover:text-emerald-300"
+                          title="Editar jogo"
+                          aria-label={`Editar ${game.title}`}
+                        >
+                          ✎
+                        </button>
+
+                        {/* Deletar */}
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const confirmDelete = confirm(
+                              `Tem certeza que deseja excluir o jogo "${game.title}"?`
+                            );
+
+                            if (!confirmDelete) return;
+
+                            const formData = new FormData();
+                            formData.append("game_id", game.id);
+
+                            try {
+                              await deleteGame(formData);
+                            } catch (error) {
+                              console.error(error);
+                              alert("Não foi possível excluir o jogo.");
+                            }
+                          }}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-300 transition hover:border-red-500 hover:text-red-400"
+                          title="Excluir jogo"
+                          aria-label={`Excluir ${game.title}`}
+                        >
+                          🗑
+                        </button>
+                      </div>
                     </article>
                   );
                 })}
