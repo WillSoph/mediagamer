@@ -5,7 +5,8 @@ export async function getGames(limit?: number): Promise<Game[]> {
   let query = supabase
     .from("games")
     .select("*")
-    .order("created_at", { ascending: false });
+    .gt("review_count", 0) // 🔥 FILTRO PRINCIPAL
+    .order("updated_at", { ascending: false }); // 🔥 MELHOR ORDEM
 
   if (limit) {
     query = query.limit(limit);
