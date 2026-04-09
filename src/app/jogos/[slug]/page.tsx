@@ -21,13 +21,13 @@ type ReviewItem = {
         id: string;
         name: string;
         slug: string;
-        trust_weight: number | null;
+        trust_weight?: number;
       }
     | {
         id: string;
         name: string;
         slug: string;
-        trust_weight: number | null;
+        trust_weight?: number;
       }[]
     | null;
 };
