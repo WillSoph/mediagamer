@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { formatScore } from "@/utils/formatScore";
 
 type Platform = {
   id: string;
@@ -25,11 +26,13 @@ type ReviewItem = {
         id: string;
         name: string;
         slug: string;
+        trust_weight?: number;
       }
     | {
         id: string;
         name: string;
         slug: string;
+        trust_weight?: number;
       }[]
     | null;
 };
@@ -128,7 +131,7 @@ function ScoreCircle({
         score
       )}`}
     >
-      {score ?? "--"}
+      {formatScore(score)}
     </div>
   );
 }
@@ -229,9 +232,7 @@ export default function GameDetailsClient({
       reviews.some((review) => normalizePlatform(review.platform) === slug)
     ) ?? linkedPlatformSlugs[0] ?? null;
 
-  const [activePlatform, setActivePlatform] = useState<string | null>(
-    defaultPlatform
-  );
+  const [activePlatform, setActivePlatform] = useState<string | null>(null);
 
   const filteredReviews = useMemo(() => {
     if (!activePlatform) return reviews;
@@ -242,23 +243,62 @@ export default function GameDetailsClient({
   }, [activePlatform, reviews]);
 
   const platformScore = useMemo(() => {
-    if (filteredReviews.length === 0) return null;
+    if (filteredReviews.length === 0 || !activePlatform) return null;
 
-    const validScores = filteredReviews
-      .map((review) => review.score_normalized)
-      .filter((score): score is number => typeof score === "number");
+    const weightedReviews = filteredReviews
+      .map((review) => {
+        const publisher = Array.isArray(review.publisher)
+          ? review.publisher[0]
+          : review.publisher;
 
-    if (validScores.length === 0) return null;
+        const score = review.score_normalized;
+        const weight = publisher?.trust_weight ?? 1;
 
-    const avg =
-      validScores.reduce((acc, score) => acc + score, 0) / validScores.length;
+        if (typeof score !== "number") return null;
 
-    return Number(avg.toFixed(0));
-  }, [filteredReviews]);
+        return { score, weight };
+      })
+      .filter(
+        (item): item is { score: number; weight: number } =>
+          item !== null && typeof item.weight === "number"
+      );
+
+    if (weightedReviews.length === 0) return null;
+
+    const totalWeight = weightedReviews.reduce(
+      (acc, item) => acc + item.weight,
+      0
+    );
+
+    if (totalWeight === 0) return null;
+
+    const weightedSum = weightedReviews.reduce(
+      (acc, item) => acc + item.score * item.weight,
+      0
+    );
+
+    return weightedSum / totalWeight;
+  }, [activePlatform, filteredReviews]);
 
   const activePlatformData = allPlatforms.find(
     (platform) => platform.slug === activePlatform
   );
+
+  console.log("DEBUG game.score_weighted:", game.score_weighted);
+console.log("DEBUG defaultPlatform:", defaultPlatform);
+console.log("DEBUG activePlatform:", activePlatform);
+console.log("DEBUG filteredReviews:", filteredReviews.length);
+console.log(
+  "DEBUG filtered review scores:",
+  filteredReviews.map((review) => review.score_normalized)
+);
+console.log("DEBUG platformScore:", platformScore);
+console.log(
+  "DEBUG score shown in circle:",
+  activePlatform ? platformScore : game.score_weighted
+);
+
+  const currentScore = activePlatform ? platformScore : game.score_weighted;
 
   return (
     <>
@@ -296,7 +336,9 @@ export default function GameDetailsClient({
                           isLinked={linkedPlatformSlugs.includes(platform.slug)}
                           isActive={activePlatform === platform.slug}
                           onClick={() => {
-                            if (!linkedPlatformSlugs.includes(platform.slug)) return;
+                            if (!linkedPlatformSlugs.includes(platform.slug)) {
+                              return;
+                            }
                             setActivePlatform(platform.slug);
                           }}
                         />
@@ -310,10 +352,7 @@ export default function GameDetailsClient({
                     </p>
                   </div>
 
-                  <ScoreCircle
-                    score={activePlatform ? platformScore : game.score_weighted}
-                    size="lg"
-                  />
+                  <ScoreCircle score={currentScore} size="lg" />
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-3">
@@ -353,24 +392,19 @@ export default function GameDetailsClient({
                         : "Nota agregada"}
                     </p>
                     <p className="text-sm font-semibold text-text-secondary">
-                      {activePlatform ? platformScore ?? "--" : game.score_weighted ?? "--"}
+                      {formatScore(currentScore)}
                     </p>
                   </div>
 
                   <div className="h-2 overflow-hidden rounded-full bg-surface">
                     <div
                       className={`h-full rounded-full ${getScoreBarClass(
-                        activePlatform ? platformScore : game.score_weighted
+                        currentScore
                       )}`}
                       style={{
                         width: `${Math.max(
                           8,
-                          Math.min(
-                            activePlatform
-                              ? platformScore ?? 8
-                              : game.score_weighted ?? 8,
-                            100
-                          )
+                          Math.min(currentScore ?? 8, 100)
                         )}%`,
                       }}
                     />

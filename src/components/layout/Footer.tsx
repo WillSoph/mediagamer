@@ -60,7 +60,7 @@ export default function Footer() {
 
             <div className="flex flex-col gap-2 text-sm text-text-secondary">
               <a
-                href="#"
+                href="https://www.instagram.com/media.gamer.br?igsh=bzd4OTNxd2lsa2R6"
                 target="_blank"
                 className="hover:text-text transition"
               >
@@ -76,7 +76,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="#"
+                href="https://www.tiktok.com/@mediagamer20?_r=1&_t=ZS-95OvKGyOdCH"
                 target="_blank"
                 className="hover:text-text transition"
               >

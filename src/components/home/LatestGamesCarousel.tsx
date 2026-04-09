@@ -35,7 +35,7 @@ function ScoreCircle({ score }: { score: number | null }) {
         score
       )}`}
     >
-      {score ?? "--"}
+      {score === null ? "--" : Math.round(score)}
     </div>
   );
 }
@@ -69,10 +69,10 @@ export default function LatestGamesCarousel({ games }: { games: Game[] }) {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h2 className="font-display text-2xl font-semibold tracking-tight text-text sm:text-3xl">
-            Últimos jogos
+            Últimos jogos analisados
           </h2>
           <p className="mt-1 text-sm text-text-secondary">
-            Os títulos mais recentes adicionados ao catálogo.
+            Os reviews mais recentes adicionados ao catálogo.
           </p>
         </div>
 

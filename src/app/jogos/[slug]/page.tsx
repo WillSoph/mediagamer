@@ -21,11 +21,13 @@ type ReviewItem = {
         id: string;
         name: string;
         slug: string;
+        trust_weight: number | null;
       }
     | {
         id: string;
         name: string;
         slug: string;
+        trust_weight: number | null;
       }[]
     | null;
 };
@@ -79,7 +81,8 @@ async function getGamePageData(slug: string) {
         publisher:publishers (
           id,
           name,
-          slug
+          slug,
+          trust_weight
         )
       `)
       .eq("game_id", game.id)
