@@ -1,21 +1,23 @@
+import { MetadataRoute } from "next";
 import { supabase } from "@/lib/supabase";
 
-export default async function sitemap() {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: games } = await supabase
     .from("games")
-    .select("slug");
+    .select("slug, updated_at");
+
+  const baseUrl = "https://mediagamer.com.br";
 
   const gameUrls =
     games?.map((game) => ({
-      url: `https://mediagamer.com.br/jogos/${game.slug}`,
+      url: `${baseUrl}/jogos/${game.slug}`,
+      lastModified: game.updated_at,
     })) ?? [];
 
   return [
     {
-      url: "https://mediagamer.com.br",
-    },
-    {
-      url: "https://mediagamer.com.br/sobre",
+      url: baseUrl,
+      lastModified: new Date(),
     },
     ...gameUrls,
   ];
