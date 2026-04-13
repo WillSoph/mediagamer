@@ -1,7 +1,7 @@
 export function formatScore(score: number | null) {
-  if (score === null) return "--";
+  if (score === null || Number.isNaN(score)) {
+    return "--";
+  }
 
-  return score >= Math.ceil(score) - 0.2
-    ? Math.ceil(score)
-    : Math.floor(score);
+  return String(Math.round(score));
 }

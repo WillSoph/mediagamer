@@ -93,6 +93,8 @@ export default function HomeClient({
 
   const showSearchResults = trimmedSearch.length > 0;
 
+  
+
   return (
     <>
       <header className="sticky top-0 z-20 border-b border-border/80 bg-bg/90 backdrop-blur">

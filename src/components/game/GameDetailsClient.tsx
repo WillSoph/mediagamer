@@ -298,7 +298,7 @@ console.log(
   activePlatform ? platformScore : game.score_weighted
 );
 
-  const currentScore = activePlatform ? platformScore : game.score_weighted;
+  const currentScore = game.score_weighted;
 
   return (
     <>
@@ -392,7 +392,7 @@ console.log(
                         : "Nota agregada"}
                     </p>
                     <p className="text-sm font-semibold text-text-secondary">
-                      {formatScore(currentScore)}
+                      {currentScore}
                     </p>
                   </div>
 
