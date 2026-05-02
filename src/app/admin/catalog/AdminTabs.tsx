@@ -561,7 +561,7 @@ export default function AdminTabs({
                           ✎
                         </button>
 
-                        {/* Deletar */}
+                        {/* Deletar1 */}
                         <button
                           type="button"
                           onClick={async () => {
